@@ -1,6 +1,7 @@
 #include "I2Cdev.h"
 #include "MPU6050.h"
 #include "Wire.h"
+#include "stdio.h"
 
 MPU6050 segmento_1;
 MPU6050 segmento_2;
@@ -14,7 +15,7 @@ float velocidad_ang[3][3];
 
 void setup() 
 {
-  Serial.begin(57600);         //Iniciando puerto serial
+  Serial.begin(9600);         //Iniciando puerto serial
   Wire.begin();               //Iniciando I2C  
   segmento_1.initialize();    //Iniciando el sensor
   if (segmento_1.testConnection()) Serial.println("Sensor iniciado correctamente");
@@ -26,19 +27,18 @@ void Obtener_velocidadAng (int n);
 
 void loop() 
 {
+    String str_aceleracion;
+    String str_velocidadAng;
     segmento_1.getAcceleration(&ax, &ay, &az);
     segmento_1.getRotation(&gx, &gy, &gz);
 
     Obtener_acelarcion (0);
     Obtener_velocidadAng (0);
-    for (int i = 0; i < 3; i++)
-    {
-      Serial.print(aceleracion [0][i]);
-      Serial.print("/");
-      Serial.print(velocidad_ang [0][i]);
-      Serial.print("\t-\t");
-    }
-    Serial.print("\n");
+  
+    str_aceleracion = "A: " + String (aceleracion[0][0], 3) + ", " + String (aceleracion[0][1], 3)+ ", " + String (aceleracion[0][2], 3);
+    str_velocidadAng = "W: " + String (velocidad_ang[0][0], 3) + ", " + String (velocidad_ang[0][1], 3)+ ", " + String (velocidad_ang[0][2], 3);
+    Serial.println(str_aceleracion);
+    Serial.println(str_velocidadAng);
 }
 
 void Obtener_acelarcion (int n)
