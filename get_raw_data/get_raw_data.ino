@@ -8,9 +8,8 @@
 MPU6050 MPU_1(0x68);
 MPU6050 MPU_2(0x69);
 
-int ax, ay, az;
-int gx, gy, gz;
-int select = 0;
+int16_t ax, ay, az;
+int16_t gx, gy, gz;
 
 float aceleracion[NUM_MPU][3];
 float velocidad_ang[NUM_MPU][3];
@@ -18,6 +17,7 @@ float velocidad_ang[NUM_MPU][3];
 void setup()
 {
   Serial.begin(9600);         //Iniciando puerto serial
+  Serial.print("H");
   Wire.begin();               //Iniciando I2C
   MPU_1.initialize();    //Iniciando el sensor
   if (MPU_1.testConnection()) Serial.println("s");
@@ -36,18 +36,20 @@ void Manda_Serial(int n);
 
 void loop()
 {
-  MPU_1.getAcceleration(&ax, &ay, &az);
-  MPU_1.getRotation(&gx, &gy, &gz);
-
+  //MPU_1.getAcceleration(&ax, &ay, &az);
+  //MPU_1.getRotation(&gx, &gy, &gz);
+  MPU_1.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
+  
   Obtener_acelarcion (0);
   Obtener_velocidadAng (0);
   Manda_Serial(0);
 
   //delay(100);
   
-  MPU_2.getAcceleration(&ax, &ay, &az);
-  MPU_2.getRotation(&gx, &gy, &gz);
-
+  //MPU_2.getAcceleration(&ax, &ay, &az);
+  //MPU_2.getRotation(&gx, &gy, &gz);
+  MPU_1.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
+  
   Obtener_acelarcion (1);
   Obtener_velocidadAng (1);
   Manda_Serial(1);

@@ -15,9 +15,12 @@ public class NewBehaviourScript : MonoBehaviour
     private float gx, gy, gz;   //Velocidades angulares
     private double ang_x, ang_y, ang_z;
 
+    public Rigidbody rb;
+    
     // Start is called before the first frame update
     void Start()
     {
+        rb = GetComponent<Rigidbody>();
         Open_Serial();
         ang_x = 0;
         ang_y = 0;
@@ -36,6 +39,8 @@ public class NewBehaviourScript : MonoBehaviour
             getRawData (serialstr);
             getAngles(preAng_x, preAng_y, preAng_z);
             setAngles();
+
+            //rb.AddForce(-ay,-az,ax,ForceMode.Force);
         }
 
 
@@ -72,13 +77,16 @@ public class NewBehaviourScript : MonoBehaviour
         if(data[0] == "A")    //Aceleracion
         {
             string[]Aceleraciones = data[1].Split(", ");
+            Debug.Log(data[1]);
             ax = float.Parse(Aceleraciones[0]);
+            Debug.Log(ax);
             ay = float.Parse(Aceleraciones[1]);
             az = float.Parse(Aceleraciones[2]);
         }
         else                    //Velocidad
         {
             string[]VelocidadesAng = data[1].Split(", ");
+            //Debug.Log(data[1]); 
             gx = float.Parse(VelocidadesAng[0]);
             gy = float.Parse(VelocidadesAng[1]);
             gz = float.Parse(VelocidadesAng[2]);
@@ -89,11 +97,11 @@ public class NewBehaviourScript : MonoBehaviour
     {
         double gyro_angle_x, gyro_angle_y, gyro_angle_z;
         float ac_angle_x, ac_angle_y, ac_angle_z;
-        float alfa = 0.86F;
+        float alfa = 0F;
     
         ac_angle_x = (float)(Mathf.Atan(ay / Mathf.Sqrt(Mathf.Pow(ax, 2) + Mathf.Pow(az, 2)))) * (float)(180.0/3.1416);
         ac_angle_y = (float)(Mathf.Atan(-1 * ax / Mathf.Sqrt(Mathf.Pow(ay, 2) + Mathf.Pow(az, 2)))) * (float)(180.0/3.1416);
-       
+        ac_angle_z = (float)(Mathf.Atan( Mathf.Sqrt(Mathf.Pow(ay, 2) + Mathf.Pow(ax, 2)))/ Mathf.Sqrt(Mathf.Pow(az, 2) + Mathf.Pow(ax, 2))) * (float)(180.0/3.1416);
 
         gyro_angle_x = preX + gx*Time.deltaTime;
         gyro_angle_y = preY + gy*Time.deltaTime;
@@ -102,16 +110,16 @@ public class NewBehaviourScript : MonoBehaviour
         
         ang_x = alfa * gyro_angle_x + (1 - alfa) * ac_angle_x;
         ang_y = alfa * gyro_angle_y + (1 - alfa) * ac_angle_y;
-        ang_z = gyro_angle_z;
+        ang_z = alfa * gyro_angle_z + alfa * ac_angle_z;
     }
 
     public void  setAngles()
     {
-        Quaternion rotationY = Quaternion.AngleAxis ((float)ang_y,
+        Quaternion rotationY = Quaternion.AngleAxis ((float)ang_y*-1,
             new Vector3 (1f, 0f, 0f));
         Quaternion rotationX = Quaternion.AngleAxis ((float)ang_x,
             new Vector3 (0f, 0f, 1f));
-        Quaternion rotationZ = Quaternion.AngleAxis ((float)ang_z,
+        Quaternion rotationZ = Quaternion.AngleAxis ((float)ang_z*-1,
             new Vector3 (0f, 1f, 0f));
 
         this.transform.rotation = rotationY * rotationX * rotationZ;
