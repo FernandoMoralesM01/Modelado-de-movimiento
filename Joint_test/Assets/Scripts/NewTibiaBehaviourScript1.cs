@@ -45,7 +45,6 @@ public class NewTibiaBehaviourScript1 : MonoBehaviour
             string[]Aceleraciones = data[1].Split(",");
             Debug.Log(Aceleraciones[0]);
             ax = float.Parse(Aceleraciones[0]);
-            
             ay = float.Parse(Aceleraciones[1]);
             az = float.Parse(Aceleraciones[2]);
         }   
@@ -92,7 +91,7 @@ public class NewTibiaBehaviourScript1 : MonoBehaviour
             new Vector3 (1f, 0f, 0f));
         Quaternion rotationX = Quaternion.AngleAxis ((float)ang_x,
             new Vector3 (0f, 0f, 1f));
-        Quaternion rotationZ = Quaternion.AngleAxis ((float)ang_z*-1,
+        Quaternion rotationZ = Quaternion.AngleAxis ((float)ang_z,
             new Vector3 (0f, 1f, 0f));
 
         

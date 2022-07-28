@@ -1,4 +1,8 @@
 #include <Adafruit_MPU6050.h>
+#include "BluetoothSerial.h"
+
+BluetoothSerial SerialBT;
+
 
 #define NUM_MPU 3
 
@@ -15,6 +19,7 @@ sensors_event_t gyro;
 
 void setup() 
 {
+  SerialBT.begin("ESP32");
   Serial.begin(9600);
   //while (!Serial)
   //  delay(10); // will pause Zero, Leonardo, etc until serial console opens
@@ -25,6 +30,7 @@ void setup()
       }
     }
   Serial.println("Conectado");
+  SerialBT.println("Conectado");
   mpu_accel = mpu.getAccelerometerSensor();
   mpu_gyro = mpu.getGyroSensor();
   
@@ -79,16 +85,20 @@ void Manda_serial()
   switch (mpuSelect)
   {
     case 0:
-      str_aceleracion = "A: " + String (accel.acceleration.x, 3) + "," + String (accel.acceleration.y, 3) + "," + String (accel.acceleration.z, 3);
-      str_velocidadAng = "W: " + String (gyro.gyro.x, 3) + "," + String (gyro.gyro.y, 3) + "," + String (gyro.gyro.y, 3);
+      str_aceleracion = "A: " + String (accel.acceleration.x, 3) + "," + String (accel.acceleration.z, 3) + "," + String (accel.acceleration.y, 3);
+      str_velocidadAng = "W: " + String (gyro.gyro.x, 3) + "," + String (gyro.gyro.z, 3) + "," + String (gyro.gyro.y, 3);
       Serial.println(str_aceleracion);
+      SerialBT.println(str_aceleracion);
       Serial.println(str_velocidadAng);
+      SerialBT.println(str_velocidadAng);
     break;
     case 1:
-      str_aceleracion = "S: " + String (accel.acceleration.x, 3) + "," + String (accel.acceleration.y, 3) + "," + String (accel.acceleration.z, 3);
-      str_velocidadAng = "E: " + String (gyro.gyro.x, 3) + "," + String (gyro.gyro.y, 3) + "," + String (gyro.gyro.y, 3);
+      str_aceleracion = "S: " + String (accel.acceleration.x, 3) + "," + String (accel.acceleration.z, 3) + "," + String (accel.acceleration.y, 3);
+      str_velocidadAng = "E: " + String (gyro.gyro.x, 3) + "," + String (gyro.gyro.z, 3) + "," + String (gyro.gyro.y, 3);
       Serial.println(str_aceleracion);
+      SerialBT.println(str_aceleracion);
       Serial.println(str_velocidadAng);
+      SerialBT.println(str_velocidadAng);
     break;
     default:
     break;

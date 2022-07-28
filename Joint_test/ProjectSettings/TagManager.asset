@@ -6,6 +6,7 @@ TagManager:
   tags:
   - BODY
   - FEMUR
+  - TIBIA
   layers:
   - Default
   - TransparentFX

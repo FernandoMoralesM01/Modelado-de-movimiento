@@ -8,9 +8,10 @@ public class NewBehaviourScript : MonoBehaviour
 {
     NewFemurBehaviourScript Femur;
     NewTibiaBehaviourScript1 Tibia;
-    public string port = "COM16";
-    public int buadrate = 115200;
-    public bool isShowMsg = false;
+    
+    public string port = "COM19";
+    public int buadrate = 9600;
+    public bool isMoving = false;
 
     private SerialPort sp;
 
@@ -28,12 +29,15 @@ public class NewBehaviourScript : MonoBehaviour
     void Update()
     {
         string serialstr = Read_Serial();
-         string[]prefix = serialstr.Split(": ");
-        if(serialstr != null && (prefix[0] == "A" || prefix[0] == "W"))
-            Femur.setSerialData(serialstr);
-        if(serialstr != null && (prefix[0] == "S" || prefix[0] == "E"))
-            Tibia.setSerialData(serialstr);
-
+        string[] prefix = null;
+        if(serialstr != null)
+        {
+            prefix = serialstr.Split(": ");
+            if(prefix[0] == "A" || prefix[0] == "W")
+                Femur.setSerialData(serialstr);
+            if(prefix[0] == "S" || prefix[0] == "E")
+                Tibia.setSerialData(serialstr);
+        }
     }
 
 

@@ -7,14 +7,18 @@ using System.IO.Ports;
 public class NewBehaviourScript : MonoBehaviour
 {
 
-    public string port = "COM5";
+    public string port = "COM19";
     public int buadrate = 9600;
 
-    private SerialPort sp;
-    private float ax, ay, az;   //Aceleraciones en los 3 ejes
-    private float gx, gy, gz;   //Velocidades angulares
-    private double ang_x, ang_y, ang_z;
+    public bool isRotating = false;
+    public bool isMoving = false;
 
+    private SerialPort sp;
+    public float ax, ay, az;   //Aceleraciones en los 3 ejes
+    public float preax = 0, preay = 0, preaz = 0;   //Aceleraciones en los 3 ejes
+    private float gx, gy, gz;   //Velocidades angulares
+    public double ang_x = 0, ang_y = 0, ang_z = 0;
+    private double preAng_x = 0, preAng_y = 0, preAng_z = 0;
     public Rigidbody rb;
     
     // Start is called before the first frame update
@@ -22,24 +26,34 @@ public class NewBehaviourScript : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         Open_Serial();
-        ang_x = 0;
-        ang_y = 0;
-        ang_z = 0;
     }
         // Update is called once per frame
 
     void Update()
     {
-        double preAng_x = ang_x, preAng_y = ang_y, preAng_z = ang_z;
+        preAng_x = ang_x;
+        preAng_y = ang_y;
+        preAng_z = ang_z;
+
+        preax = ax;
+        preay = ay;
+        preaz = az;   //Aceleraciones en los 3 ejes
         string serialstr = Read_Serial();
         
         if(serialstr != null)
         {
             //Debug.Log(serialstr);
             getRawData (serialstr);
-            getAngles(preAng_x, preAng_y, preAng_z);
-            setAngles();
-
+            if(isRotating)
+            {
+                getAngles(preAng_x, preAng_y, preAng_z);
+                setAngles();
+            }
+            if(isMoving)
+            {
+               rb.AddForce((ax - preax) * 2,-(az - preaz), (ay - preay)*2,ForceMode.Impulse); 
+               //rb.AddForce((ax) * 5,-(az), (ay)*5,ForceMode.Force); 
+            }
             //rb.AddForce(-ay,-az,ax,ForceMode.Force);
         }
 
@@ -76,28 +90,30 @@ public class NewBehaviourScript : MonoBehaviour
         string []data = rawData.Split(": ");
         if(data[0] == "A")    //Aceleracion
         {
-            string[]Aceleraciones = data[1].Split(", ");
+            string[]Aceleraciones = data[1].Split(",");
             Debug.Log(data[1]);
             ax = float.Parse(Aceleraciones[0]);
             Debug.Log(ax);
             ay = float.Parse(Aceleraciones[1]);
             az = float.Parse(Aceleraciones[2]);
         }
-        else                    //Velocidad
-        {
-            string[]VelocidadesAng = data[1].Split(", ");
-            //Debug.Log(data[1]); 
-            gx = float.Parse(VelocidadesAng[0]);
-            gy = float.Parse(VelocidadesAng[1]);
-            gz = float.Parse(VelocidadesAng[2]);
-        }
+        else
+            if(data[0] == "W")    //Velocidad
+            {
+                string[]VelocidadesAng = data[1].Split(",");
+                //Debug.Log(data[1]); 
+                gx = float.Parse(VelocidadesAng[0]);
+                gy = float.Parse(VelocidadesAng[1]);
+                gz = float.Parse(VelocidadesAng[2]);
+            }
+            
     }
 
     public void getAngles(double preX, double preY, double preZ)
     {
         double gyro_angle_x, gyro_angle_y, gyro_angle_z;
         float ac_angle_x, ac_angle_y, ac_angle_z;
-        float alfa = 0F;
+        float alfa = 0.87F;
     
         ac_angle_x = (float)(Mathf.Atan(ay / Mathf.Sqrt(Mathf.Pow(ax, 2) + Mathf.Pow(az, 2)))) * (float)(180.0/3.1416);
         ac_angle_y = (float)(Mathf.Atan(-1 * ax / Mathf.Sqrt(Mathf.Pow(ay, 2) + Mathf.Pow(az, 2)))) * (float)(180.0/3.1416);
