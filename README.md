@@ -4,13 +4,7 @@ It was created a system capable of tracking the leg position by the use of IMU's
 
 The system gets the IMU information through the Bluetooth connection of an ESP32. The raw data is processed in a C# script and the data is displayed on a Unity scene. 
 
-<p align="center">
-  <img width="600" height="600" src=https://github.com/FernandoMoralesM01/Modelado-de-movimiento/assets/94548980/b1b31728-09ee-451d-a1cb-c45c5da3a466>
-  <br><br><br>
-  <img width="600" height="600" src=https://github.com/FernandoMoralesM01/Modelado-de-movimiento/assets/94548980/67c411d7-024d-4cb9-abb1-6bcec081356c>
-  <br><br><br>
-  <img width="600" height="600" src=https://github.com/FernandoMoralesM01/Modelado-de-movimiento/assets/94548980/0246524d-da41-48cf-b985-a6828f8a1ff4>
-</p>
+
 
 
 A system was implemented to obtain the position of the body, however, due to the lack of data coming from the sensors, it was not possible to do this effectively. In the future it is expected to use more sensors to obtain said position.
